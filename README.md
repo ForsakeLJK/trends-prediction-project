@@ -1,1 +1,1 @@
-# trends-prediction-project
+# ID2223 Course Project
