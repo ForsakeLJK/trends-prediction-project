@@ -5,7 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pandas>=2.3.3",
+    "hopsworks[python]==4.2.10",
+    "scikit-learn>=1.8.0",
+    "atproto>=0.0.55,<0.0.56",
 ]
 
 [dependency-groups]

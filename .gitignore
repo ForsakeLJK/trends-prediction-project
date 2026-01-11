@@ -208,3 +208,7 @@ __marimo__/
 
 # Mac
 .DS_Store
+
+# Custom ignores
+*.json
+*.joblib
