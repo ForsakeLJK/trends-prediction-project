@@ -236,4 +236,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     archiver = FirehoseScraper(output_file=args.output, verbose=args.verbose, num_workers=args.workers)
-    archiver.start_collection(duration_seconds=args.time, post_limit=args.number)
+    archiver.start_collection(duration_seconds=300, post_limit=None)

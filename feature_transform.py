@@ -18,6 +18,26 @@ REQUIRED_COLUMNS = [
     "source_file",
 ]
 
+BASELINE_8_FEATURES = [
+    "post_count",
+    "count_lag1",
+    "delta_count",
+    "share_of_attention",
+    "rank_in_snapshot",
+    "tokens_per_post",
+    "hour_sin",
+    "hour_cos",
+]
+
+LABELS = [
+    "label_count_next",
+    "label_delta_next",
+]
+
+PRIMARY_KEYS = ["trend", "ts"]
+SORT_KEYS = ["ts", "post_count", "trend"]
+SORT_ASCENDING = [True, False, True]
+
 
 @dataclass(frozen=True)
 class FeatureConfig:
@@ -57,6 +77,26 @@ def _add_time_features(df: pd.DataFrame) -> pd.DataFrame:
     ).astype("string")
     return df
 
+def calculate_trend_features(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+    df = df.sort_values(["trend", "ts"]).reset_index(drop=True)
+    df["count_lag1"] = df.groupby("trend")["post_count"].shift(1)
+    df["delta_count"] = df["post_count"] - df["count_lag1"]
+    # df["tokens_per_post"] = df["token_volume"] / df["post_count"].clip(lower=1)
+    df["rank_in_snapshot"] = (
+        df.groupby("ts")["post_count"]
+          .rank(method="first", ascending=False)
+          .astype("int32")
+    )
+    df["total_count_all_trends_at_ts"] = df.groupby("ts")["post_count"].transform("sum").astype("int64")
+    df["share_of_attention"] = df["post_count"] / df["total_count_all_trends_at_ts"].clip(lower=1)
+    df["label_count_next"] = df.groupby("trend")["post_count"].shift(-1)
+    df["label_delta_next"] = df["label_count_next"] - df["post_count"]
+
+    df.sort_values(["ts","post_count","trend"], ascending=[True, False, True], inplace=True)
+    # Clean up types (optional)
+    # Keep NaNs in lag/label columns; you will drop them for training.
+    return df.reset_index(drop=True)
 
 def build_feature_table(raw: pd.DataFrame, cfg: FeatureConfig = FeatureConfig()) -> pd.DataFrame:
     """
@@ -226,27 +266,6 @@ def get_feature_columns(df_features: pd.DataFrame) -> List[str]:
     cols = base + sorted(rolling)
     # Keep only existing columns
     return [c for c in cols if c in df_features.columns]
-
-
-BASELINE_8_FEATURES = [
-    "post_count",
-    "count_lag1",
-    "delta_count",
-    "share_of_attention",
-    "rank_in_snapshot",
-    "tokens_per_post",
-    "hour_sin",
-    "hour_cos",
-]
-
-LABELS = [
-    "label_count_next",
-    "label_delta_next",
-]
-
-PRIMARY_KEYS = ["trend", "ts"]
-SORT_KEYS = ["ts", "post_count", "trend"]
-SORT_ASCENDING = [True, False, True]
 
 def select_feature_store_columns(df_features: pd.DataFrame) -> pd.DataFrame:
     # Optional metadata that can be useful for debugging / lineage
