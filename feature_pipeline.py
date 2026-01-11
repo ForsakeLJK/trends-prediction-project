@@ -42,7 +42,7 @@ if __name__ == "__main__":
     
     project = hopsworks.login(api_key_value="CNgidWirCRs6p66s.GjTJhC5kmU5qZnGvt4QR5VjDiwU5XgKZeGtjvPojyxFhkAzxgOlEtDxCaYFnh0Ge")
     fs = project.get_feature_store()
-    trends_fg = fs.get_feature_group("trends_feature_store", version=1)
+    trends_fg = fs.get_feature_group("trends_feature_store", version=2)
     
     trends_df = trends_fg.read()
     print(trends_df.info())

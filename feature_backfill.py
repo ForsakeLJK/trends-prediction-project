@@ -4,7 +4,6 @@ import re
 from feature_transform import FeatureConfig, build_feature_table, select_feature_store_columns
 
 if __name__ == "__main__":
-    project = hopsworks.login(api_key_value="CNgidWirCRs6p66s.GjTJhC5kmU5qZnGvt4QR5VjDiwU5XgKZeGtjvPojyxFhkAzxgOlEtDxCaYFnh0Ge")
     df = pd.read_csv('./historical_data.csv',
                         dtype={
             "Trend": "string",
@@ -20,11 +19,11 @@ if __name__ == "__main__":
     cfg = FeatureConfig(bucket_minutes=5, rolling_windows=(3, 12))
     features_df = build_feature_table(df_en, cfg)
     features_df = select_feature_store_columns(features_df)
-    
+    project = hopsworks.login(api_key_value="CNgidWirCRs6p66s.GjTJhC5kmU5qZnGvt4QR5VjDiwU5XgKZeGtjvPojyxFhkAzxgOlEtDxCaYFnh0Ge")
     fs = project.get_feature_store() 
     feature_group = fs.get_or_create_feature_group(
         name="trends_feature_store",
-        version=1,
+        version=2,
         description="Feature store for trends prediction project",
         event_time ="ts",
         primary_key=["ts", "trend"]

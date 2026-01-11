@@ -269,7 +269,7 @@ def get_feature_columns(df_features: pd.DataFrame) -> List[str]:
 
 def select_feature_store_columns(df_features: pd.DataFrame) -> pd.DataFrame:
     # Optional metadata that can be useful for debugging / lineage
-    optional_meta = [c for c in ["trend_raw", "source_file"] if c in df_features.columns]
+    optional_meta = [c for c in ["trend_raw", "source_file", "token_volume"] if c in df_features.columns]
 
     needed = PRIMARY_KEYS + BASELINE_8_FEATURES + LABELS + optional_meta
     missing = [c for c in needed if c not in df_features.columns]

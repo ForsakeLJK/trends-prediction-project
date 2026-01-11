@@ -38,7 +38,7 @@ if __name__ == "__main__":
     
     
     # get the latest 5 minutes of data for inference   
-    trends_fg = fs.get_feature_group("trends_feature_store", version=1)
+    trends_fg = fs.get_feature_group("trends_feature_store", version=2)
     trends_df = trends_fg.read()
     latest_ts = trends_df['ts'].max()
     inference_df = trends_df[trends_df['ts'] == latest_ts]

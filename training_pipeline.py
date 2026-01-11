@@ -21,7 +21,7 @@ if __name__ == "__main__":
     fs = project.get_feature_store()
     mr = project.get_model_registry()
     
-    trends_fg = fs.get_feature_group("trends_feature_store", version=1)
+    trends_fg = fs.get_feature_group("trends_feature_store", version=2)
     selected_features = trends_fg.select(SELECT_FEATURES)
 
     feature_view = fs.get_or_create_feature_view(
