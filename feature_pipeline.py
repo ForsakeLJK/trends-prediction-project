@@ -41,7 +41,7 @@ if __name__ == "__main__":
     print("transforming scraped data into feature csv...")
     build_csv_data(input_path = output_file_name, output_csv = "feature_data.csv")
 
-    df = pd.read_csv('tmp/feature_data.csv',
+    df = pd.read_csv('tmp_csv/feature_data.csv',
                         dtype={
             "Trend": "string",
             "source_file": "string"
@@ -49,7 +49,7 @@ if __name__ == "__main__":
                     parse_dates=["time_stamp"]
     )
     
-    shutil.rmtree("tmp")
+    shutil.rmtree("tmp_csv")
     
     print("building feature table...")
     english_pattern = re.compile(r'^#[A-Za-z0-9_]+$')

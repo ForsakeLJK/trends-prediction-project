@@ -215,8 +215,11 @@ __marimo__/
 *.jsonl
 train_data/
 tmp/
+tmp_csv/
 data/
 feature_store/
 hindcast/
 
 dashboard.html
+
+logs/
