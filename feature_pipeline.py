@@ -6,14 +6,27 @@ from scrape_data_transform import build_csv_data
 import os
 from datetime import datetime
 import re
+from dotenv import load_dotenv
 
 if __name__ == "__main__":
-    project = hopsworks.login(api_key_value="CNgidWirCRs6p66s.GjTJhC5kmU5qZnGvt4QR5VjDiwU5XgKZeGtjvPojyxFhkAzxgOlEtDxCaYFnh0Ge")
-    fs = project.get_feature_store()
-    trends_fg = fs.get_feature_group("trends_feature_store", version=2)
-    
-    trends_df = trends_fg.read()
-    
+    load_dotenv()
+    mode = os.getenv("RUNNING_MODE")
+    if mode == "HOPSWORKS":
+        project = hopsworks.login(api_key_value="CNgidWirCRs6p66s.GjTJhC5kmU5qZnGvt4QR5VjDiwU5XgKZeGtjvPojyxFhkAzxgOlEtDxCaYFnh0Ge")
+        fs = project.get_feature_store()
+        trends_fg = fs.get_feature_group("trends_feature_store", version=2)
+        
+        trends_df = trends_fg.read()
+    elif mode == "LOCAL":
+        trends_df = pd.read_csv('feature_store/trends_feature_store_v2.csv',
+                        dtype={
+                        "trend": "string"
+        },
+                    parse_dates=["ts"]
+        )
+        
+        print(trends_df.info())
+        
     time_var = datetime.now().strftime('%Y%m%d_%H%M%S')
 
     jsonl_folder_path = "data"
@@ -22,10 +35,10 @@ if __name__ == "__main__":
     print("starting data scrape...")
     # scrape data for 5 minutes
     archiver = FirehoseScraper(output_file=output_file_name, verbose=False, num_workers=4)
-    archiver.start_collection(duration_seconds=300, post_limit=None)
+    archiver.start_collection(duration_seconds=60, post_limit=None)
 
     print("transforming scraped data into feature csv...")
-    build_csv_data(input_path = jsonl_folder_path, output_csv = "feature_data.csv")
+    build_csv_data(input_path = output_file_name, output_csv = "feature_data.csv")
 
     df = pd.read_csv('train_data/feature_data.csv',
                         dtype={
@@ -47,12 +60,13 @@ if __name__ == "__main__":
     print(features_df.info())
     
     trends_df["trend"] = trends_df["trend"].astype("string")
-    features_df["ts"] = (
-        features_df["ts"]
-            .dt.tz_localize("UTC")      # make it timezone-aware
-            .dt.tz_convert("Etc/UTC")   # normalize to Etc/UTC (same offset, different name)
-            .dt.as_unit("us")          # convert ns → µs
-    )
+    if mode == "HOPSwORKS":
+        features_df["ts"] = (
+            features_df["ts"]
+                .dt.tz_localize("UTC")      # make it timezone-aware
+                .dt.tz_convert("Etc/UTC")   # normalize to Etc/UTC (same offset, different name)
+                .dt.as_unit("us")          # convert ns → µs
+        )
     
     combined_df = pd.concat([features_df, trends_df]).reset_index(drop=True)
     print(combined_df.info())
@@ -62,4 +76,9 @@ if __name__ == "__main__":
     print(final_df.head())
     
     print("writing features to feature store...")
-    trends_fg.insert(final_df)
+    if mode == "HOPSWORKS":
+        trends_fg.insert(final_df)
+    elif mode == "LOCAL":
+        os.makedirs("feature_store", exist_ok=True)
+        final_df.to_csv('feature_store/trends_feature_store_v2.csv', index=False)
+    print("feature store update complete.")
