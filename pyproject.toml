@@ -8,6 +8,8 @@ dependencies = [
     "hopsworks[python]==4.2.10",
     "scikit-learn>=1.8.0",
     "atproto>=0.0.55,<0.0.56",
+    "python-dotenv>=1.2.1",
+    "matplotlib>=3.10.8",
 ]
 
 [dependency-groups]
