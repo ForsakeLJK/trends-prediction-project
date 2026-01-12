@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Mac
+.DS_Store
+
+# Custom ignores
+*.json
+*.joblib
+*.jsonl
+train_data/
+data/

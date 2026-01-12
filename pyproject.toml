@@ -4,4 +4,13 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "hopsworks[python]==4.2.10",
+    "scikit-learn>=1.8.0",
+    "atproto>=0.0.55,<0.0.56",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.1.0",
+]
