@@ -16,7 +16,7 @@ if __name__ == "__main__":
     print("starting data scrape...")
     # scrape data for 5 minutes
     archiver = FirehoseScraper(output_file=output_file_name, verbose=False, num_workers=4)
-    archiver.start_collection(duration_seconds=5, post_limit=None)
+    archiver.start_collection(duration_seconds=300, post_limit=None)
 
     print("transforming scraped data into feature csv...")
     build_csv_data(input_path = jsonl_folder_path, output_csv = "feature_data.csv")
@@ -45,14 +45,20 @@ if __name__ == "__main__":
     trends_fg = fs.get_feature_group("trends_feature_store", version=2)
     
     trends_df = trends_fg.read()
-    print(trends_df.info())
+    trends_df["trend"] = trends_df["trend"].astype("string")
+    features_df["ts"] = (
+        features_df["ts"]
+            .dt.tz_localize("UTC")      # make it timezone-aware
+            .dt.tz_convert("Etc/UTC")   # normalize to Etc/UTC (same offset, different name)
+            .dt.as_unit("us")          # convert ns → µs
+    )
     
-    trends_df = trends_df["trend"].astype("string")
     combined_df = pd.concat([features_df, trends_df]).reset_index(drop=True)
     print(combined_df.info())
-    
+
     final_df = calculate_trend_features(combined_df)
-    # print("final feature table:")
     print(final_df.info())
     print(final_df.head())
-    # final_df.to_csv('train_data/final_feature_data.csv', index=False)
+    
+    print("writing features to feature store...")
+    trends_fg.insert(final_df, operation="insert")
