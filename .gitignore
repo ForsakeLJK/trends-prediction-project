@@ -212,3 +212,6 @@ __marimo__/
 # Custom ignores
 *.json
 *.joblib
+*.jsonl
+train_data/
+data/
