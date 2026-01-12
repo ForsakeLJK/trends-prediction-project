@@ -214,6 +214,9 @@ __marimo__/
 *.joblib
 *.jsonl
 train_data/
+tmp/
 data/
 feature_store/
 hindcast/
+
+dashboard.html
