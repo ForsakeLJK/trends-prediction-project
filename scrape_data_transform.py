@@ -115,8 +115,8 @@ def build_csv_data(input_path = "data", output_csv = "feature_data.csv"):
     files = collect_files(input_path)
     files = sorted(files, key=lambda p: timestamp_from_filename(p) or os.path.basename(p))
     df_all = build_training_rows(files)
-    os.makedirs("train_data", exist_ok=True)
-    OUTPUT_ALL = f"train_data/{output_csv}"
+    os.makedirs("tmp_csv", exist_ok=True)
+    OUTPUT_ALL = f"tmp_csv/{output_csv}"
     TOP_N = 30
     SORT_BY = "post_count"  
     

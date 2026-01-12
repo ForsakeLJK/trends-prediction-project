@@ -1,4 +1,5 @@
 import hopsworks
+import shutil
 import pandas as pd
 from scraper import FirehoseScraper
 from feature_transform import FeatureConfig, build_feature_table, select_feature_store_columns, calculate_trend_features
@@ -35,18 +36,20 @@ if __name__ == "__main__":
     print("starting data scrape...")
     # scrape data for 5 minutes
     archiver = FirehoseScraper(output_file=output_file_name, verbose=False, num_workers=4)
-    archiver.start_collection(duration_seconds=60, post_limit=None)
+    archiver.start_collection(duration_seconds=300, post_limit=None)
 
     print("transforming scraped data into feature csv...")
     build_csv_data(input_path = output_file_name, output_csv = "feature_data.csv")
 
-    df = pd.read_csv('train_data/feature_data.csv',
+    df = pd.read_csv('tmp_csv/feature_data.csv',
                         dtype={
             "Trend": "string",
             "source_file": "string"
         },
                     parse_dates=["time_stamp"]
     )
+    
+    shutil.rmtree("tmp_csv")
     
     print("building feature table...")
     english_pattern = re.compile(r'^#[A-Za-z0-9_]+$')
