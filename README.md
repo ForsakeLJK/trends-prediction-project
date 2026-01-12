@@ -1,5 +1,7 @@
 # ID2223 Course Project – Real-Time Bluesky Trend Prediction
 
+![dashbaord](./dashboard_screenshot.png)
+
 ## 1. Project Overview
 This project builds a fully automated, end-to-end machine learning system that predicts future trending hashtags on Bluesky in real time.
 Unlike Kaggle-style static datasets, Bluesky does not provide historical trend data. Therefore, we design and implement our own continuous data collection, feature engineering, model training, and prediction infrastructure that operates on a live social media stream.
@@ -210,5 +212,3 @@ A static HTML dashboard is regenerated every 5 minutes to visualize:
 * predicted vs actual Top-5 trends,
 * next Top-5 trends prediction,
 * and prediction accuracy over time.
-
-[todo: screenshot]
