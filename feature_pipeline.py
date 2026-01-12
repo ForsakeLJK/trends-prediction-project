@@ -61,4 +61,4 @@ if __name__ == "__main__":
     print(final_df.head())
     
     print("writing features to feature store...")
-    trends_fg.insert(final_df, operation="insert")
+    trends_fg.insert(final_df)
