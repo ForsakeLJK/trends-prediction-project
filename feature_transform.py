@@ -82,7 +82,7 @@ def calculate_trend_features(df: pd.DataFrame) -> pd.DataFrame:
     df = df.sort_values(["trend", "ts"]).reset_index(drop=True)
     df["count_lag1"] = df.groupby("trend")["post_count"].shift(1)
     df["delta_count"] = df["post_count"] - df["count_lag1"]
-    # df["tokens_per_post"] = df["token_volume"] / df["post_count"].clip(lower=1)
+    df["tokens_per_post"] = df["token_volume"] / df["post_count"].clip(lower=1)
     df["rank_in_snapshot"] = (
         df.groupby("ts")["post_count"]
           .rank(method="first", ascending=False)
