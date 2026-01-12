@@ -90,6 +90,7 @@ def calculate_trend_features(df: pd.DataFrame) -> pd.DataFrame:
     )
     df["total_count_all_trends_at_ts"] = df.groupby("ts")["post_count"].transform("sum").astype("int64")
     df["share_of_attention"] = df["post_count"] / df["total_count_all_trends_at_ts"].clip(lower=1)
+    df.drop(columns=["total_count_all_trends_at_ts"], errors='ignore', inplace=True)
     df["label_count_next"] = df.groupby("trend")["post_count"].shift(-1)
     df["label_delta_next"] = df["label_count_next"] - df["post_count"]
 
