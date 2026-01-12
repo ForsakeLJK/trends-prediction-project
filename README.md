@@ -211,5 +211,4 @@ A static HTML dashboard is regenerated every 5 minutes to visualize:
 * next Top-5 trends prediction,
 * and prediction accuracy over time.
 
-**Screenshot placeholder:**
-[Add screenshot here]
+[todo: screenshot]
