@@ -22,26 +22,17 @@ BASELINE_8_FEATURES = [
 ]
 
 def calculate_top_k_hit_rate(df, k=5):
-    # 1. Group by timestamp
-    # 2. For each TS, find the actual top K trends and predicted top K trends
-    # 3. Calculate the intersection size divided by K
-    
-    hit_rates = []
-    timestamps = df['ts'].unique()
-    
-    for ts in timestamps:
-        current_df = df[df['ts'] == ts]
-        
-        # Get labels of top K actual and predicted
-        actual_top_k = set(current_df.nlargest(k, 'post_count')['trend'])
-        predicted_top_k = set(current_df.nlargest(k, 'predicted_post_count')['trend'])
-        
-        # Calculate intersection
-        hits = len(actual_top_k.intersection(predicted_top_k))
-        hit_rate = hits / k
-        hit_rates.append(hit_rate)
-        
-    return pd.DataFrame({'ts': timestamps, 'hit_rate': hit_rates})
+    df = df.copy()
+
+    rows = []
+    for ts, g in df.groupby('ts', sort=True):
+        actual_top_k = set(g.nlargest(k, 'post_count')['trend'])
+        predicted_top_k = set(g.nlargest(k, 'predicted_post_count')['trend'])
+        hit_rate = len(actual_top_k & predicted_top_k) / k
+        rows.append((ts, hit_rate))
+
+    return pd.DataFrame(rows, columns=['ts', 'hit_rate'])
+
 
 if __name__ == "__main__":
     load_dotenv()
